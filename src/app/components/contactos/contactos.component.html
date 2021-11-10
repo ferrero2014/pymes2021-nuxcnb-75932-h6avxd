@@ -1,0 +1,168 @@
+<div class="tituloPagina">
+  {{ Titulo }} <small>{{ TituloAccionABMC[accionABMC] }}</small>
+</div>
+
+<!--Botones iniciales-->
+<div *ngIf="accionABMC == 'L'">
+  <div class="row justify-content-center botones">
+    <button type="button" class="btn btn-primary" (click)="buscar()">
+      <i class="fas fa-search"> </i> Buscar
+    </button>
+    <button type="button" class="btn btn-primary" (click)="agregar()">
+      <i class="fas fa-plus"> </i> Agregar
+    </button>
+  </div>
+
+  <!--Tabla de resultados-->
+  <div id="divTablaResultados" *ngIf="contactos?.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">IdContacto</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">FechaNacimiento</th>
+          <th scope="col">Telefono</th>
+          <th scope="col">Consultar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let contacto of contactos">
+          <th scope="row">{{ contacto.IdContacto }}</th>
+          <td>{{ contacto.Nombre | uppercase }}</td>
+          <td>{{ contacto.FechaNacimiento | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ contacto.Telefono }}</td>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            title="Consultar"
+            (click)="consultar(contacto)"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Registro en Alta,Modificacion o Consulta -->
+<form name="formRegistro" [formGroup]="formRegistro" *ngIf="accionABMC != 'L'">
+  <fieldset [disabled]="accionABMC === 'C'">
+    <!--campo nombre-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="Nombre">
+        Nombre <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          class="form-control text-uppercase"
+          [ngClass]="{ redClass: formRegistro.controls.Nombre.errors }"
+          formControlName="Nombre"
+        />
+      </div>
+      <!--Avertencias validadores nombre-->
+      <span
+        class="text-danger"
+        *ngIf="
+          formRegistro.controls.Nombre.errors &&
+          formRegistro.controls.Nombre.errors.required
+        "
+      >
+        Dato requerido.
+      </span>
+      <span
+        class="text-danger"
+        *ngIf="formRegistro.controls.Nombre.errors?.maxlength"
+      >
+        Maximo 50 caracteres.
+      </span>
+    </div>
+
+    <!--campo fechanacimiento-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2">
+        Fecha de Nacimiento<span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          class="form-control text-uppercase"
+          [ngClass]="{ redClass: formRegistro.controls.FechaNacimiento.errors }"
+          name="fechaNacimiento"
+          formControlName="FechaNacimiento"
+        />
+      </div>
+      <!--Adevertencias Validadores fechanacimiento-->
+      <span
+        class="text-danger"
+        *ngIf="
+          formRegistro.controls.FechaNacimiento.errors &&
+          formRegistro.controls.FechaNacimiento.errors.required
+        "
+      >
+        Dato requerido.
+      </span>
+      <span
+        class="text-danger"
+        *ngIf="formRegistro.controls.FechaNacimiento.errors?.pattern"
+      >
+        Formato invalido, dd/mm/aaaa.
+      </span>
+    </div>
+
+    <!--campo Telefono-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="telefono">
+        Telefono <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          name="telefono"
+          class="form-control text-uppercase"
+          [ngClass]="{ redClass: formRegistro.controls.Telefono.errors }"
+          formControlName="Telefono"
+        />
+      </div>
+      <!--Advertencias Validadores Telefono-->
+      <span
+        class="text-danger"
+        *ngIf="
+          formRegistro.controls.Telefono.errors &&
+          formRegistro.controls.Telefono.errors.required
+        "
+      >
+        Dato requerido.
+      </span>
+      <span
+        class="text-danger"
+        *ngIf="formRegistro.controls.Telefono.errors?.pattern"
+      >
+        Solo nros, Maximo 9 caracteres.
+      </span>
+    </div>
+  </fieldset>
+
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <div class="row justify-content-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="
+        formRegistro.controls.Nombre.errors ||
+        formRegistro.controls.FechaNacimiento.errors ||
+        formRegistro.controls.Telefono.errors
+      "
+      (click)="grabar()"
+      *ngIf="accionABMC == 'A' || accionABMC == 'M'"
+    >
+      <i class="fas fa-check"></i> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="volver()">
+      <i class="fas fa-undo">{{
+        accionABMC == 'A' || accionABMC == 'M' ? 'Cancelar' : 'Volver'
+      }}</i>
+    </button>
+  </div>
+</form>
